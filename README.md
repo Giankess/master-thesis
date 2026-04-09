@@ -73,17 +73,25 @@ Model selection is not done on the test split. Instead:
 
 After selecting the best config, the model is re-run with **multiple seeds on the untouched test split** to measure sensitivity and report mean ± std.
 
-### 5) Metric framework (quality + structure)
+### 5) Metric framework (literature-aligned)
 
-The project intentionally mixes semantic and geometric metrics:
+The current pipeline separates **model selection metrics** from **final diagnostics**.
 
-- **Coherence ($C_v$)** with robust fallback handling,
-- **Topic Diversity**,
+**Tuning metrics (equal weight in CV):**
+
+- **Coherence ($C_v$)**, motivated by usage in financial topic-model evaluation (Kretinin & Nguyen),
+- **Coherence ($C_{NPMI}$)**, following coherence choices in BERTopic evaluation setups (Jehnen et al.),
+- **Topic Diversity**, aligned with diversity reporting practices in topic-model assessment (Egger & Yu),
+- **Intra-topic similarity** (higher is better),
+- **Inter-topic similarity** (lower is better; inverted in scoring), both from the semantic compactness/separation framing in Jehnen et al.
+
+**Final-test diagnostics (not used for model selection):**
+
 - **Silhouette (cosine)** on non-outlier assignments,
 - **Outlier Ratio** (share of `-1` documents),
-- **Topic Count** and singleton diagnostics.
+- **Topic Count** and singleton checks.
 
-This prevents over-optimizing for one metric while ignoring cluster pathologies.
+This design keeps ranking focused on semantic topic quality while still reporting geometric/cluster-health behavior on the held-out test set.
 
 ---
 
@@ -100,12 +108,12 @@ Model selection in this pipeline occurs in **two phases**:
 
 #### Search Strategy
 
-- **Search space**: 3 × 2 × 4 × 3 × 2 = 144 parameter combinations
-  - `n_neighbors` ∈ {15, 30, 50} (UMAP local neighborhood size),
-  - `n_components` ∈ {5, 10} (UMAP dimensionality),
-  - `min_cluster_size` ∈ {5, 8, 10, 20} (HDBSCAN density threshold),
-  - `min_samples` ∈ {1, 3, 5} (HDBSCAN core-distance sensitivity),
-  - `ngram_range` ∈ {(1,1), (1,2)} (vectorizer: unigrams or unigrams+bigrams).
+- **Search space**: expanded grid of approximately **300 parameter combinations** across:
+	- `n_neighbors` (UMAP local neighborhood size),
+	- `n_components` (UMAP dimensionality),
+	- `min_cluster_size` (HDBSCAN density threshold),
+	- `min_samples` (HDBSCAN core-distance sensitivity),
+	- `ngram_range` (vectorizer: unigrams or unigrams+bigrams).
 
 - **Validation folds**: 3 rolling/expanding folds on train+val pool (e.g., fold 1 trains on first 33%, validates on next 33%; fold 2 trains on first 66%, validates on last 33%; etc.)
 
@@ -113,16 +121,15 @@ Model selection in this pipeline occurs in **two phases**:
 
 #### Per-Fold Metrics
 
-For each (trial, fold) combination, six base metrics are collected:
+For each (trial, fold) combination, five core metrics are collected and used for ranking:
 
-| Metric | Range | Meaning |
-|--------|-------|---------|
-| **cv_val** | [0, 1] | Coherence C_v on validation fold. Measures semantic interpretability. Fallback: `COHERENCE_EPS` (1e-8) if NaN. |
-| **val_silhouette** | [-1, 1] | Cosine-distance silhouette on non-outlier points. Measures geometric cluster cohesion. Excludes singletons. Fallback: 0.0. |
-| **topic_diversity** | [0, 1] | Fraction of unique words across all topics. Higher = less redundancy. Fallback: 0.0. |
-| **val_outlier_ratio** | [0, 1] | Fraction of documents assigned to topic `-1` (HDBSCAN outliers). Lower = better. Fallback: 1.0. |
-| **val_singleton_ratio** | [0, 1] | Fraction of valid topics with only 1 member. Lower = better. Fallback: 1.0. |
-| **n_topics** | ≥1 | Total number of valid (non-outlier) topics. Used for penalty term. |
+| Metric | Direction | Meaning |
+|--------|-----------|---------|
+| **cv_val** | higher better | Coherence $C_v$ on validation fold (semantic interpretability). |
+| **npmi_val** | higher better | Coherence $C_{NPMI}$ on validation fold (word co-occurrence consistency). |
+| **topic_diversity** | higher better | Fraction of unique words across topics (lower redundancy). |
+| **intra_sim** | higher better | Mean semantic similarity within topics (topic compactness). |
+| **inter_sim** | lower better | Mean semantic similarity across topics (topic distinctness). |
 
 #### Aggregation to Param-Level Scores
 
@@ -132,33 +139,24 @@ Results from all 3 folds are **averaged per unique parameter tuple**, producing 
 ```
 norm_i = (value_i - min) / (max - min)
 ```
-where direction is determined by `higher_is_better`:
+where direction is determined by `higher_is_better`; for `inter_sim`, the normalized score is inverted so that higher normalized value always means better.
+
+Each parameter set gets:
 - `cv_val_norm` = normalized coherence (higher = better),
-- `val_silhouette_norm` = normalized silhouette (higher = better),
+- `npmi_val_norm` = normalized NPMI coherence (higher = better),
 - `topic_diversity_norm` = normalized diversity (higher = better),
-- `val_outlier_ratio_norm` = normalized (1 - outlier_ratio) (higher = better),
-- `val_singleton_ratio_norm` = normalized (1 - singleton_ratio) (higher = better).
+- `intra_sim_norm` = normalized intra-topic similarity (higher = better),
+- `inter_sep_norm` = normalized separation from inter-topic similarity (higher = better).
 
 #### Composite Score Calculation
 
-The **composite score** blends normalized metrics with explicit weights:
+The **composite score** is the equal-weight average of the five normalized core metrics:
 
 $$
-\text{composite\_score} = 0.30 \times \text{cv\_val\_norm} + 0.20 \times \text{sil\_norm} + 0.20 \times \text{div\_norm} + 0.15 \times \text{outlier\_norm} + 0.15 \times \text{singleton\_norm} - \text{penalty}
+composite_{score} = \frac{1}{5}\left(\text{cv\_val\_norm} + \text{npmi\_val\_norm} + \text{topic\_diversity\_norm} + \text{intra\_sim\_norm} + \text{inter\_sep\_norm}\right)
 $$
 
-**Weight rationale**:
-- **30% Coherence**: primary signal for semantic quality.
-- **20% Silhouette**: ensures clusters are geometrically separated (not just semantically coherent).
-- **20% Diversity**: prevents topics from overlapping or being dominated by the same words.
-- **15% Outlier Ratio**: penalizes configurations that discard too many documents.
-- **15% Singleton Ratio**: discourages fragmentation into noise clusters.
-
-**Penalty term**:
-```
-penalty = 0.25 if n_topics < 3 else 0.0
-```
-Ensures the model extracts at least a minimal number of interpretable topics.
+This keeps model selection aligned with the thesis objective: choose topics that are coherent, diverse, internally compact, and externally distinct, without adding extra ad-hoc weighting between these core quality dimensions.
 
 #### Model Selection
 
@@ -175,22 +173,20 @@ The **top-ranked configuration** is the row with the highest composite score. Ti
 
 #### Why Multi-Seed?
 
-Even with fixed `RANDOM_SEED=42` during tuning, UMAP and HDBSCAN are stochastic in their internal algorithms. To measure **robustness**, the best-tuned configuration is re-run with multiple different seeds **only on the held-out test split**:
-
-$$\text{EVAL\_SEEDS} = [42, 7, 123, 2024, 99]$$
+Even with fixed `RANDOM_SEED=42` during tuning, UMAP and HDBSCAN are stochastic in their internal algorithms. To measure **robustness**, the best-tuned configuration is re-run with **9 different seeds** only on the held-out test split.
 
 #### Test Evaluation Workflow
 
 For each seed:
 1. Refit the best model on **train + validation** (using the seed in UMAP/HDBSCAN),
 2. Transform and evaluate on **test set only** (never seen before),
-3. Record per-seed metrics: coherence, silhouette, diversity, outlier ratio, topic count.
+3. Record per-seed metrics: $C_v$, $C_{NPMI}$, diversity, intra/inter similarity, plus final diagnostics (silhouette, outlier ratio, topic count).
 
 #### Summary Statistics
 
-Per-metric mean and standard deviation (std) across the 5 seeds:
+Per-metric mean and standard deviation (std) across the 9 seeds:
 
-$$\mu_{\text{metric}} = \frac{1}{5} \sum_{i=1}^{5} \text{metric}_i, \quad \sigma_{\text{metric}} = \sqrt{\frac{1}{5} \sum_{i=1}^{5} (\text{metric}_i - \mu)^2}$$
+$$\mu_{\text{metric}} = \frac{1}{9} \sum_{i=1}^{9} \text{metric}_i, \quad \sigma_{\text{metric}} = \sqrt{\frac{1}{9} \sum_{i=1}^{9} (\text{metric}_i - \mu)^2}$$
 
 **Thesis-ready reporting table** formats this as `mean ± std` (e.g., `0.4675 ± 0.0188`), allowing readers to quickly assess both point estimates and sensitivity.
 
@@ -198,11 +194,11 @@ $$\mu_{\text{metric}} = \frac{1}{5} \sum_{i=1}^{5} \text{metric}_i, \quad \sigma
 
 ### Interpretation of Scores & Diagnostics
 
-#### Composite Score Breakdown
+#### Composite Score Meaning
 
-- **High (> 0.80)**: Excellent balance of coherence, clustering structure, and diversity.
-- **Medium (0.60–0.80)**: Good semantic quality but possibly some cluster issues (outliers or singletons).
-- **Low (< 0.60)**: Poor clustering or semantic interpretability.
+- A higher composite score indicates stronger performance on the five equally weighted semantic quality dimensions used in tuning.
+- Comparisons are meaningful **within the same experiment run/grid** (after fold-level aggregation and normalization).
+- Final model claims are based on **mean ± std across seeds on test**, not on a single best seed.
 
 #### Outlier Ratio Interpretation
 
@@ -246,9 +242,10 @@ This multi-metric, multi-fold, multi-seed design addresses common pitfalls:
 
 **Avoids test-set contamination** (tuning only on train+val)  
 **Captures temporal dynamics** (rolling CV folds)  
-**Balances interpretability vs. structure** (composite score with diverse weights)  
-**Measures robustness** (multi-seed final evaluation)  
-**Prevents over-optimization on one metric** (outlier/singleton penalties built in)  
+**Uses literature-aligned semantic criteria** (Jehnen; Kretinin & Nguyen; Egger & Yu)  
+**Balances coherence, diversity, compactness, and separation** (equal-weight composite)  
+**Measures robustness** (9-seed final evaluation)  
+**Keeps structural diagnostics transparent** (silhouette/outlier/topic count reported on test)  
 **Respects domain constraints** (allows high outlier ratio for financial noise)
 
 ---
