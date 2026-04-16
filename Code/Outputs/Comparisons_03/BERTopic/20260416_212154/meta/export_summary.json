@@ -1,0 +1,20 @@
+{
+  "pipeline": "BERTopic",
+  "run_tag": "20260416_212154",
+  "export_root": "Outputs\\Comparisons_03\\BERTopic\\20260416_212154",
+  "saved_items": [
+    "metrics",
+    "row_topic_assignments",
+    "topic_info",
+    "topic_terms"
+  ],
+  "paths": {
+    "topic_info": "Outputs\\Comparisons_03\\BERTopic\\20260416_212154\\tables\\topic_info.csv",
+    "topic_terms": "Outputs\\Comparisons_03\\BERTopic\\20260416_212154\\tables\\topic_terms_long.csv",
+    "row_topic_assignments": "Outputs\\Comparisons_03\\BERTopic\\20260416_212154\\row_level\\row_topic_assignments.csv",
+    "metrics": "Outputs\\Comparisons_03\\BERTopic\\20260416_212154\\tables\\metrics_summary.csv"
+  },
+  "notes": [
+    "Model save skipped: 'tokenizer'"
+  ]
+}

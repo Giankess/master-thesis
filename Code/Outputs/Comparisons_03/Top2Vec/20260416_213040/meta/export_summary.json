@@ -1,0 +1,20 @@
+{
+  "pipeline": "Top2Vec",
+  "run_tag": "20260416_213040",
+  "export_root": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040",
+  "saved_items": [
+    "metrics",
+    "model_file",
+    "row_topic_assignments",
+    "topic_prevalence",
+    "topic_terms"
+  ],
+  "paths": {
+    "topic_terms": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040\\tables\\topic_terms_long.csv",
+    "row_topic_assignments": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040\\row_level\\row_topic_assignments.csv",
+    "topic_prevalence": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040\\tables\\topic_prevalence.csv",
+    "metrics": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040\\tables\\metrics_summary.csv",
+    "model_file": "Outputs\\Comparisons_03\\Top2Vec\\20260416_213040\\models\\top2vec_model"
+  },
+  "notes": []
+}

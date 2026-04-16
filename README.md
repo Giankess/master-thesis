@@ -295,8 +295,8 @@ The practical pipeline is organized as notebooks in `Code/`.
 Run notebooks sequentially in this order:
 
 1. `Code/01_data_collection.ipynb`
-2. `Code/02_data_preprocessing.ipynb`
-3. `Code/02_data_standardization.ipynb`
+2. `Code/02_data_standardization.ipynb`
+3. `Code/02_data_preprocessing.ipynb`
 4. selected `Code/03_data_pipeline_*.ipynb` comparison notebooks
 5. `Code/04_data_pipeline_BERTopic_TEST_TRAIN.ipynb` (main experimental notebook)
 
