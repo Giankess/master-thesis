@@ -1,0 +1,20 @@
+{
+  "n_neighbors": 50,
+  "n_components": 10,
+  "min_cluster_size": 20,
+  "min_samples": 3,
+  "ngram_range": "(1, 2)",
+  "cv_val": 0.5792147489221163,
+  "npmi_val": 0.08557744972859076,
+  "topic_diversity": 0.764252095261804,
+  "intra_topic_similarity": 0.7955295860022996,
+  "inter_topic_similarity": 0.7410083611806234,
+  "n_topics": 147.33333333333334,
+  "fit_seconds": 86.84465000000152,
+  "cv_val_norm": 1.0,
+  "npmi_val_norm": 1.0,
+  "topic_diversity_norm": 0.3067161712180153,
+  "intra_topic_similarity_norm": 0.6692491185351324,
+  "inter_topic_separation_norm": 0.5929310680022392,
+  "composite_score": 0.7137792715510775
+}

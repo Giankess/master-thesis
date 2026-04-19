@@ -1,0 +1,38 @@
+{
+  "run_tag": "20260417_031943",
+  "export_root": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943",
+  "document_counts": {
+    "all": 90048,
+    "train": 62969,
+    "validation": 13503,
+    "test": 13576
+  },
+  "saved_items": [
+    "best_params_json",
+    "best_per_fold",
+    "corpus_table",
+    "cv_results",
+    "fig_daily",
+    "fig_diag",
+    "fig_heat",
+    "fig_seed_box",
+    "fig_seed_outliers",
+    "fig_seed_topics",
+    "fig_topic_prev",
+    "fig_tradeoff",
+    "final_metrics",
+    "leaderboard",
+    "row_level_assignments",
+    "seed_results",
+    "split_table",
+    "summary_stats",
+    "thesis_report",
+    "topic_info",
+    "topic_prevalence",
+    "topic_terms",
+    "tuning_results"
+  ],
+  "notes": [
+    "Model save skipped: 'tokenizer'"
+  ]
+}

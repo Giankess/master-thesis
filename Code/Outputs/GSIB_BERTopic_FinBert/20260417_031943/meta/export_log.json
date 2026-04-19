@@ -1,0 +1,74 @@
+{
+  "run_tag": "20260417_031943",
+  "created_at": "2026-04-17T03:19:43.157107",
+  "paths": {
+    "topic_info": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\topic_info.csv",
+      "parquet": null
+    },
+    "topic_terms": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\topic_terms_long.csv",
+      "parquet": null
+    },
+    "row_level_assignments": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\row_level\\row_topic_assignments_all.csv",
+      "parquet": null
+    },
+    "topic_prevalence": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\topic_prevalence_by_split.csv",
+      "parquet": null
+    },
+    "cv_results": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\cv_results.csv",
+      "parquet": null
+    },
+    "tuning_results": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\tuning_results.csv",
+      "parquet": null
+    },
+    "best_per_fold": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\best_params_per_fold.csv",
+      "parquet": null
+    },
+    "seed_results": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\seed_results.csv",
+      "parquet": null
+    },
+    "summary_stats": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\summary_stats.csv",
+      "parquet": null
+    },
+    "thesis_report": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\thesis_report.csv",
+      "parquet": null
+    },
+    "final_metrics": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\final_metrics.csv",
+      "parquet": null
+    },
+    "leaderboard": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\tuning_leaderboard_top10.csv",
+      "parquet": null
+    },
+    "split_table": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\split_table.csv",
+      "parquet": null
+    },
+    "corpus_table": {
+      "csv": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\tables\\corpus_table.csv",
+      "parquet": null
+    },
+    "best_params_json": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\meta\\best_params.json",
+    "fig_daily": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_daily_document_volume.html",
+    "fig_topic_prev": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_topic_prevalence_top20.html",
+    "fig_tradeoff": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_tuning_tradeoff.html",
+    "fig_seed_box": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_seed_stability_box.html",
+    "fig_heat": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_fold_metric_heatmap.html",
+    "fig_diag": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_embedding_diagnostics.html",
+    "fig_seed_outliers": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_seed_outlier_ratio.html",
+    "fig_seed_topics": "Outputs\\GSIB_BERTopic_FinBert\\20260417_031943\\figures\\figure_seed_topic_count.html"
+  },
+  "notes": [
+    "Model save skipped: 'tokenizer'"
+  ]
+}
