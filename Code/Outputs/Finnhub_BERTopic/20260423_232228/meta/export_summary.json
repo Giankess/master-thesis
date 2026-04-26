@@ -1,0 +1,32 @@
+{
+  "timestamp": "20260423_232228",
+  "dataset": "finnhub",
+  "exported_items": {
+    "tables": [
+      "topic_info",
+      "topic_terms_long"
+    ],
+    "row_level": [
+      "row_topic_assignments_train"
+    ],
+    "models": [
+      "bertopic_model"
+    ],
+    "figures": [
+      "fig_diag"
+    ],
+    "summary_stats": {
+      "dataset": "finnhub",
+      "total_documents": 4289,
+      "train_documents": 1963,
+      "val_documents": 1174,
+      "test_documents": 1152,
+      "num_topics": 51,
+      "model_params": {
+        "language": "english",
+        "min_topic_size": 10
+      }
+    }
+  },
+  "output_directory": "Outputs\\Finnhub_BERTopic\\20260423_232228"
+}
