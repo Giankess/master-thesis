@@ -1,0 +1,9 @@
+﻿Metric,Mean,Std,Mean ± Std
+Coherence C_v,0.4671,0.0051,0.4671 ± 0.0051
+Coherence NPMI,-0.0368,0.0051,-0.0368 ± 0.0051
+Topic Diversity,0.7835,0.0042,0.7835 ± 0.0042
+Intra-topic Similarity,0.6038,0.0039,0.6038 ± 0.0039
+Inter-topic Similarity,0.3052,0.0029,0.3052 ± 0.0029
+Silhouette (cosine),0.1452,0.0046,0.1452 ± 0.0046
+Outlier Ratio,0.5536,0.0058,0.5536 ± 0.0058
+Topic Count,422.0,8.2158,422.0000 ± 8.2158

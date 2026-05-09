@@ -1,0 +1,74 @@
+{
+  "run_tag": "20260505_023635",
+  "created_at": "2026-05-05T02:36:35.389378",
+  "paths": {
+    "topic_info": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\topic_info.csv",
+      "parquet": null
+    },
+    "topic_terms": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\topic_terms_long.csv",
+      "parquet": null
+    },
+    "row_level_assignments": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\row_level\\row_topic_assignments_all.csv",
+      "parquet": null
+    },
+    "topic_prevalence": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\topic_prevalence_by_split.csv",
+      "parquet": null
+    },
+    "cv_results": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\cv_results.csv",
+      "parquet": null
+    },
+    "tuning_results": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\tuning_results.csv",
+      "parquet": null
+    },
+    "best_per_fold": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\best_params_per_fold.csv",
+      "parquet": null
+    },
+    "seed_results": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\seed_results.csv",
+      "parquet": null
+    },
+    "summary_stats": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\summary_stats.csv",
+      "parquet": null
+    },
+    "thesis_report": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\thesis_report.csv",
+      "parquet": null
+    },
+    "final_metrics": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\final_metrics.csv",
+      "parquet": null
+    },
+    "leaderboard": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\tuning_leaderboard_top10.csv",
+      "parquet": null
+    },
+    "split_table": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\split_table.csv",
+      "parquet": null
+    },
+    "corpus_table": {
+      "csv": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\tables\\corpus_table.csv",
+      "parquet": null
+    },
+    "best_params_json": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\meta\\best_params.json",
+    "fig_daily": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_daily_document_volume.html",
+    "fig_topic_prev": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_topic_prevalence_top20.html",
+    "fig_tradeoff": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_tuning_tradeoff.html",
+    "fig_seed_box": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_seed_stability_box.html",
+    "fig_heat": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_fold_metric_heatmap.html",
+    "fig_diag": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_embedding_diagnostics.html",
+    "fig_seed_outliers": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_seed_outlier_ratio.html",
+    "fig_seed_topics": "Outputs\\eodhd_BERTopic_FinLang\\20260505_023635\\figures\\figure_seed_topic_count.html"
+  },
+  "notes": [
+    "Model save skipped: 'tokenizer'"
+  ]
+}

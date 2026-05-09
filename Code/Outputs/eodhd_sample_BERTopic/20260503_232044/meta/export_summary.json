@@ -1,0 +1,32 @@
+{
+  "timestamp": "20260503_232044",
+  "dataset": "GSIB",
+  "exported_items": {
+    "tables": [
+      "topic_info",
+      "topic_terms_long"
+    ],
+    "row_level": [
+      "row_topic_assignments_train"
+    ],
+    "models": [
+      "bertopic_model"
+    ],
+    "figures": [
+      "fig_diag"
+    ],
+    "summary_stats": {
+      "dataset": "GSIB",
+      "total_documents": 11811,
+      "train_documents": 8198,
+      "val_documents": 1680,
+      "test_documents": 1933,
+      "num_topics": 137,
+      "model_params": {
+        "language": "english",
+        "min_topic_size": 10
+      }
+    }
+  },
+  "output_directory": "Outputs\\eodhd_sample_BERTopic\\20260503_232044"
+}

@@ -1,0 +1,2 @@
+﻿Model,Seeds (n),Coherence C_v (test),Coherence NPMI (test),Topic Diversity (test),Intra-topic Similarity (test),Inter-topic Similarity (test),"Silhouette (test, cosine)",Outlier Ratio (test),Topic Count (test)
+BERTopic (best CV config),9,0.4671 ± 0.0051,-0.0368 ± 0.0051,0.7835 ± 0.0042,0.6038 ± 0.0039,0.3052 ± 0.0029,0.1452 ± 0.0046,0.5536 ± 0.0058,422.00 ± 8.22
