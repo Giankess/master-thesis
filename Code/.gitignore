@@ -1,8 +1,9 @@
 .env
-exploration.md
-thesis_context.md
-CODE_DIGEST.md
-THESIS_CONTEXT.md
+./exploration.md
+./thesis_context.md
+./CODE_DIGEST.md
+./THESIS_CONTEXT.md
+./THESIS_CONTEXT_ENHANCED.md
 
 # Ignore large CSV results
 **/07_regression_data_merged.csv

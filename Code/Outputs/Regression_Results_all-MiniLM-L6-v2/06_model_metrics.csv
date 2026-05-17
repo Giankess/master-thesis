@@ -1,11 +1,11 @@
 ,Value
-Model_Specification,daily_return ~ topic_0_lag1 + topic_1_lag1 + topic_2_lag1 + topic_3_lag1 + topic_6_lag1 + topic_8_la
-N_Observations,80268
-N_Variables,131
-R_squared,0.0020361836487275964
-Adjusted_R_squared,0.00041726484560711263
-F_statistic,1.2577429113818852
-F_pvalue,0.024946270903744218
-AIC,332339.2621954542
-BIC,333556.66174270696
-Residual_Std_Error,1.9163673431067962
+Model_Specification,daily_return ~ topic_2_lag1 + topic_11_lag1 + topic_17_lag1 + topic_29_lag1 + topic_33_lag1 + topic_
+N_Observations,3074
+N_Variables,30
+R_squared,0.008715972518979709
+Adjusted_R_squared,-0.0007279291882966721
+F_statistic,0.9229207153081779
+F_pvalue,0.5843438025780828
+AIC,11919.470428432576
+BIC,12100.392476155532
+Residual_Std_Error,1.6735741694424862

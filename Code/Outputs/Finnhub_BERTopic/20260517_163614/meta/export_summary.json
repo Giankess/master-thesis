@@ -1,0 +1,29 @@
+{
+  "run_tag": "20260517_163614",
+  "export_root": "Outputs\\Finnhub_BERTopic\\20260517_163614",
+  "document_counts": {
+    "all": 4289,
+    "train": 3002,
+    "validation": 585,
+    "test": 702
+  },
+  "saved_items": [
+    "best_params_json",
+    "best_per_fold",
+    "cv_results",
+    "fig_diag",
+    "fig_seed_outliers",
+    "fig_seed_topics",
+    "row_level_assignments",
+    "seed_results",
+    "summary_stats",
+    "thesis_report",
+    "topic_info",
+    "topic_prevalence",
+    "topic_terms",
+    "tuning_results"
+  ],
+  "notes": [
+    "Model save skipped: 'tokenizer'"
+  ]
+}
