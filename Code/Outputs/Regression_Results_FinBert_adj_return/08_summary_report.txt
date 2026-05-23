@@ -9,14 +9,14 @@ FRAMEWORK:
   - Specification: adj_return(t) ~ topic_assignments(t-1)
   - Interpretation: Today's news topics predict tomorrow's adjusted stock returns
   - Sample: 29 G-SIB banks with daily frequency
-  - Period: 2014-02-19 to 2026-05-08
+  - Period: 2026-01-13 to 2026-05-01
 
 DATA STRUCTURE:
   - Topics loaded from BERTopic: Outputs\eodhd_BERTopic_FinBert\20260504_230615\row_level\row_topic_assignments_all.csv
   - Topics from day (t-1) merged with returns from day (t)
   - Daily aggregation: topics summed per ticker-date combination
-  - Total rows available: 80,268
-  - Rows used in regression: 80,268
+  - Total rows available: 3,734
+  - Rows used in regression: 3,734
 
 DATA INTEGRATION NOTES:
   - BERTopic outputs lack ticker information; recovered via headline matching
@@ -32,30 +32,30 @@ REGRESSION SPECIFICATION:
   Estimation: OLS with robust standard errors
 
 MODEL RESULTS:
-  R-squared: 0.0011
-  Adjusted R-squared: 0.0002
-  F-statistic: 1.16
-  p-value: 1.57e-01
-  Sample Size: 80,268 observations
+  R-squared: 0.0932
+  Adjusted R-squared: 0.0105
+  F-statistic: 1.13
+  p-value: 6.98e-02
+  Sample Size: 3,734 observations
 
 INTERPRETATION:
-  News topics from day t explain 0.1% of variation in day t+1 adjusted returns.
+  News topics from day t explain 9.3% of variation in day t+1 adjusted returns.
   This is consistent with market efficiency - topics provide some predictive power
   but most of next-day adjusted returns remain unexplained.
 
 TOP 5 TOPICS WITH LARGEST POSITIVE IMPACT ON NEXT-DAY ADJUSTED RETURNS:
-topic_179_lag1    5.626481
-topic_323_lag1    5.626481
-topic_160_lag1    3.292583
-topic_39_lag1     2.757859
-topic_253_lag1    2.380591
+topic_303_lag1    5.044782
+topic_359_lag1    4.959830
+topic_334_lag1    4.449782
+topic_180_lag1    4.419397
+topic_128_lag1    3.432490
 
 TOP 5 TOPICS WITH LARGEST NEGATIVE IMPACT ON NEXT-DAY ADJUSTED RETURNS:
-topic_17_lag1    -1.405585
-topic_60_lag1    -1.572733
-topic_454_lag1   -1.632594
-topic_197_lag1   -1.978415
-topic_81_lag1    -2.230780
+topic_188_lag1   -3.889981
+topic_285_lag1   -3.984284
+topic_330_lag1   -4.097760
+topic_126_lag1   -5.549118
+topic_173_lag1   -6.118051
 
 DIAGNOSTIC TESTS:
   Breusch-Pagan (Heteroskedasticity): See Section 8 output
@@ -78,4 +78,4 @@ METHODOLOGY REFERENCE:
   Approach: Daily news topics (t-1) predict returns (t)
   Model Type: Linear panel regression with bank fixed effects
 
-Generated: 2026-05-17 16:57:49
+Generated: 2026-05-23 22:42:40

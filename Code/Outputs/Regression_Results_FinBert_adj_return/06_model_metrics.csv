@@ -1,11 +1,11 @@
 ,Value
-Model_Specification,daily_adj_return ~ topic_0_lag1 + topic_1_lag1 + topic_2_lag1 + topic_4_lag1 + topic_5_lag1 + topic_
-N_Observations,80268
-N_Variables,77
-R_squared,0.001073766590806824
-Adjusted_R_squared,0.00015198362630508555
-F_statistic,1.1648800554557193
-F_pvalue,0.15717889428016618
-AIC,332346.18248046504
-BIC,333043.166954083
-Residual_Std_Error,1.9171177297371031
+Model_Specification,daily_adj_return ~ topic_0_lag1 + topic_1_lag1 + topic_2_lag1 + topic_3_lag1 + topic_4_lag1 + topic_
+N_Observations,3734
+N_Variables,313
+R_squared,0.09320950998307787
+Adjusted_R_squared,0.010508944977149937
+F_statistic,1.1270722270929656
+F_pvalue,0.06981960664772711
+AIC,16034.363727020564
+BIC,17982.862383464384
+Residual_Std_Error,1.9899046849210797
