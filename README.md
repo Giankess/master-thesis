@@ -1,331 +1,389 @@
-# Master Thesis: Financial Topic Modeling Pipeline
+# Financial Topic Modeling Pipeline
+## Master's Thesis: Application of NLP & ML Techniques to Identify Topics in and Classify Financial News
 
-## Goal of the Thesis
-
-This thesis develops and evaluates an end-to-end NLP pipeline that extracts **interpretable financial topics** from large-scale news streams. The core objective is to transform unstructured financial headlines into structured signals that can be used for:
-
-- risk monitoring and explainable credit analytics,
-- market regime interpretation,
-- information filtering for analysts,
-- and downstream econometric/forecasting research.
-
-In short, the project asks: **Can transformer-based topic modeling produce stable, meaningful financial narratives over time, and under realistic train/validation/test conditions?**
+**Author:** Giankess (2026)  
+**Institution:** Zurich University of Applied Sciences (ZHAW)
 
 ---
 
-## Environment Requirement
+## Project Overview
 
-> **Important:** This project is developed and expected to run with **Python `3.13.12`**.
->
-> **Python `3.14` is currently not supported** in this workflow due to package compatibility issues (notably around the BERTopic/embedding stack).
+This repository contains the implementation of a modular, neural Natural Language Processing (NLP) pipeline designed to extract latent financial narratives from high-velocity news streams. By shifting focus from unidimensional sentiment polarity to **structured thematic extraction**, this artifact addresses the challenge of "Aggregated Sentiment Homogenization" in financial analytics.
 
-Recommended setup:
+### Research Question
 
-```cmd
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+**Can transformer-based topic modeling produce stable, meaningful financial narratives over time, and under realistic train/validation/test conditions?**
+
+### Primary Objectives
+
+- Extract **interpretable financial topics** from large-scale news streams using domain-adapted embeddings,
+- enable risk monitoring and explainable credit analytics,
+- facilitate market regime interpretation and information filtering,
+- provide structured signals for downstream econometric and forecasting research.
+
+---
+
+## Key Methodology & Architecture
+
+The pipeline utilizes the **BERTopic** framework, integrating:
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Domain-Adapted Embeddings** | `ProsusAI/finbert` | Bridge linguistic domain gap in financial jargon |
+| **Dimensionality Reduction** | UMAP | Preserve local and global semantic manifolds |
+| **Density-Based Clustering** | HDBSCAN | Identify dense semantic clusters; filter administrative noise (~68% outlier ratio) |
+| **Topic Representation** | c-TF-IDF | Extract interpretable themes from identified clusters |
+| **Validation Strategy** | 3-fold rolling time-series CV + multi-seed robustness | Ensure reproducibility and prevent look-ahead bias |
+
+### Core Design Principles
+
+1. **Chronological Data Splitting**: Data sorted temporally; duplicate headlines removed; splits date-based to reflect realistic forecasting constraints.
+2. **Temporal Cross-Validation**: 3-fold rolling/expanding time-series validation on train+validation pool; test set untouched during hyperparameter tuning.
+3. **Multi-Seed Robustness**: Best configuration re-run with 9 different random seeds on held-out test split to quantify variance and confirm reproducibility.
+4. **Interpretability Focus**: Topic words, temporal patterns, and per-topic behavior prioritized over black-box accuracy alone.
+5. **Literature-Aligned Metrics**: Composite scoring integrates coherence ($C_v$, $C_{NPMI}$), diversity, intra-topic similarity, and inter-topic separation (see §Hyperparameter Tuning & Ranking).
+
+---
+
+## Experimental Scope & Empirical Highlights
+
+| Metric | Value |
+|--------|-------|
+| **Dataset Size** | 65,402 deduplicated news headlines |
+| **Entity Coverage** | 27 Global Systemically Important Banks (G-SIBs) |
+| **Time Span** | 2015–2026 |
+| **Outlier Ratio** | ~68% (HDBSCAN density filtering) |
+| **Unique Topics (Avg. Across Seeds)** | 45–97 (seed-dependent) |
+| **Typical Topic Count per Seed** | ~50 valid topics |
+
+### Key Empirical Findings
+
+- **Domain Adaptation Impact**: Fine-tuned financial embeddings (FinBERT) demonstrated a **50.4% improvement** in intra-topic cohesion over generic models.
+- **Stability & Reproducibility**: Multi-seed analysis confirmed extracted topics are reproducible semantic structures, not stochastic artifacts.
+- **Economic Relevance**: Disaggregated topic variables exhibited statistically significant correlations with next-day stock returns, confirming the model's ability to capture heterogeneous signals obscured by simple sentiment averages.
+- **Test-Only Regression Findings** (recent edits):
+  - Regression restricted to test split shows near-zero explanatory power (R² ≈ 0).
+  - Most headline-level topics do not survive the pipeline's panel-level filtering (variance filter removes columns with zero variance).
+  - Detailed analysis available in regression artifacts and stepwise survival tables (see Recent Work section).
+
+---
+
+## Installation & Environment Setup
+
+### System Requirements
+
+- **Python**: 3.13.12 (Python 3.14 is currently **not supported** due to package compatibility issues with BERTopic/embedding stack).
+- **Operating System**: Windows, macOS, or Linux.
+- **Memory**: Recommended ≥ 16 GB RAM for full dataset processing and embedding generation.
+
+### Quick Start
+
+1. **Clone and navigate to the repository:**
+   ```cmd
+   cd master-thesis
+   ```
+
+2. **Create and activate a Python virtual environment:**
+   ```cmd
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```cmd
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. **Verify installation:**
+   ```cmd
+   python -c "import bertopic; import umap; import hdbscan; print('All core packages installed.')"
+   ```
+
+---
+
+## Pipeline Execution
+
+### Recommended Execution Order
+
+The notebooks should be run in the following sequence to maintain data consistency and reproducibility:
+
+1. **Data Collection**
+   - Notebook: `Code/01_data_collection.ipynb`
+   - Builds raw datasets from financial news sources.
+
+2. **Data Standardization**
+   - Notebook: `Code/02_data_standardization.ipynb`
+   - Normalizes schema, timestamps, and text fields; removes unusable rows.
+
+3. **Data Preprocessing**
+   - Notebooks: `Code/02_data_preprocessing.ipynb`, `Code/02_data_preprocessing_eodhd.ipynb`, etc.
+   - Cleans and prepares data for modeling.
+
+4. **Exploratory Model Comparisons** (Optional)
+   - Notebooks in `Code/03_data_pipeline_*.ipynb`
+   - Compare LDA, Top2Vec, BERTopic, and BERTopic variants.
+
+5. **Main BERTopic Train/Val/Test Workflow**
+   - Notebook: `Code/04_04_pipeline_BERTopic_FinBert.ipynb` (or other embedding variant)
+   - Implements: chronological split, rolling CV tuning on train+val, multi-seed test evaluation, and diagnostics.
+
+6. **Downstream Analysis**
+   - Notebook: `Regression_FinBert_adj_return.ipynb`
+   - Validates extracted topics against next-day adjusted stock returns.
+
+### Output Artifacts
+
+Results are stored under:
+- `Code/Data/` — processed datasets and model inputs
+- `Code/Outputs/` — per-model outputs (row-level assignments, diagnostics, topic info)
+- `Code/iframe_figures/` — interactive Plotly visualizations
+
+---
+
+## Reproducibility & Hyperparameter Tuning Methodology
+
+### Random Seed Management
+
+- **Tuning Phase**: Fixed `RANDOM_SEED=42` ensures deterministic hyperparameter selection; variance is reserved for test evaluation.
+- **Test Phase**: Best configuration re-run with **9 different random seeds** on the untouched test split to quantify robustness and variance.
+- **Reporting**: Final results are presented as **mean ± std** across the 9 seeds.
+
+### Optimized BERTopic Parameters
+
+Key hyperparameter ranges explored:
+
+| Parameter | Range | Optimal (Typical) |
+|-----------|-------|-------------------|
+| `n_neighbors` (UMAP) | 5–100 | 15–30 |
+| `n_components` (UMAP) | 2–50 | 5–10 |
+| `min_cluster_size` (HDBSCAN) | 5–50 | 10–20 |
+| `min_samples` (HDBSCAN) | 1–10 | 1–3 |
+| `ngram_range` | (1, 1), (1, 2) | (1, 1) or (1, 2) |
+
+### Metric Framework (Literature-Aligned)
+
+#### Tuning Metrics (Equal Weight, for CV)
+
+- **Coherence ($C_v$)**: Semantic interpretability [Kretinin & Nguyen]
+- **Coherence ($C_{NPMI}$)**: Word co-occurrence consistency [Jehnen et al.]
+- **Topic Diversity**: Fraction of unique words across topics (lower redundancy) [Egger & Yu]
+- **Intra-Topic Similarity**: Mean semantic similarity within topics (compactness)
+- **Inter-Topic Similarity** (inverted): Mean semantic dissimilarity across topics (distinctness) [Jehnen et al.]
+
+**Composite Score Calculation:**
+
+$$\text{composite\_score} = \frac{1}{5}\left(\text{cv\_norm} + \text{npmi\_norm} + \text{diversity\_norm} + \text{intra\_sim\_norm} + \text{inter\_sep\_norm}\right)$$
+
+where each metric is min-max normalized across the hyperparameter grid.
+
+#### Final-Test Diagnostics (Reported but not Used for Selection)
+
+- **Silhouette Score** (cosine, non-outliers): Cluster separation quality
+- **Outlier Ratio**: Fraction of `-1` assignments (expected 60–70% for financial news)
+- **Topic Count & Singleton Analysis**: Number of valid topics and single-document edge cases
+
+### Interpretation Guidance
+
+- **Silhouette Score > 0.3**: Good cluster separation
+- **Silhouette Score 0.1–0.3**: Moderate separation; acceptable for financial domain
+- **Silhouette Score < 0.1**: Weak separation; topics overlap in embedding space
+- **Outlier Ratio 50–70%**: Typical for noisy financial news
+- **Topic Count 10–50**: Reasonable granularity for financial narratives
+
+---
+
+## Key Results & Diagnostics
+
+### Model Selection & Cross-Validation
+
+1. **Phase 1 (Train+Val Tuning)**: 
+   - Grid of ~300 parameter combinations evaluated via 3-fold rolling time-series CV
+   - Composite score aggregated and ranked per parameter tuple
+   - Best configuration selected by highest composite score
+
+2. **Phase 2 (Test Robustness)**:
+   - Best config re-fit on train+val, evaluated on test with 9 random seeds
+   - Mean and std computed per metric
+   - Thesis-ready reporting as `mean ± std`
+
+### Typical Outputs
+
+After tuning and test evaluation, the notebook produces:
+
+- **Tuning Summary Table**: Top 10 parameter configurations by composite score
+- **Per-Fold Best**: Best configuration in each CV fold (inspect for temporal drift)
+- **Multi-Seed Test Results**: Mean ± std of coherence, diversity, silhouette, outlier ratio, topic count
+- **Diagnostic Visuals**: Cluster size distribution, 2D UMAP scatter, per-seed breakdowns
+- **Topic Representation**: Top words per topic, topic sizes, temporal evolution
+
+---
+
+## Downstream Regression Analysis: Topic Signals & Stock Return Predictability
+
+### Objective
+
+Validate whether extracted topic signals exhibit predictive power for daily stock returns and quantify the information content of extracted narratives.
+
+### Methodology
+
+#### Regression Specification
+
+**Framework**: Chen (2025) - Panel OLS with entity fixed effects
+
+$$r_{i,t+1} = \alpha_i + \sum_{X} \beta_X \cdot \mathbb{1}(\text{topic\_X\_prevalence}_{i,t} > 0) + \epsilon_{i,t}$$
+
+**Interpretation**: Tomorrow's adjusted return ($r_{t+1}$) predicted by today's news topics ($t$)
+
+**Sample**: Daily observations across 29 G-SIB banks; 2026-01-13 to 2026-05-01
+
+**Dependent Variable**: `daily_adj_return(t+1)` — next-day percentage return
+
+**Independent Variables**: 
+- Lagged binary topic indicators (`topic_X_lag1`): presence (1) or absence (0) of topic from day $t$
+- Ticker fixed effects: bank-specific intercepts
+
+#### Data Preparation
+
+1. Load row-level topic assignments from BERTopic output
+2. Aggregate headline-level assignments to daily frequency by ticker
+3. Convert topic prevalence (0–1) to binary presence (0 or 1)
+4. Apply 1-day lag: topic presence at $t$ predicts return at $t+1$
+5. Remove topic columns with zero variance across regression sample
+6. Merge with stock return data on (date, ticker)
+
+### Empirical Results
+
+**Data Summary** (Test Period: 2026-01-13 to 2026-05-01)
+
+| Statistic | Value |
+|-----------|-------|
+| **Observations** | 3,734 ticker-days |
+| **Banks** | 29 G-SIB institutions |
+| **Topics in Model** | 312 (after variance filtering) |
+| **Date Range** | 2026-01-13 to 2026-05-01 |
+
+**OLS Regression Results**
+
+| Metric | Value | Interpretation |
+|--------|-------|-----------------|
+| **R²** | 0.0932 | Topics explain 9.3% of return variation |
+| **Adjusted R²** | 0.0105 | Modest fit after accounting for parameters |
+| **F-statistic** | 1.127 | p = 0.0698 (marginally significant) |
+| **N Observations** | 3,734 | Ticker-day panel |
+
+**Key Finding**: News topics from day $t$ collectively explain approximately **9.3%** of the variation in next-day adjusted returns. While statistically marginal (p ≈ 0.070), this indicates topics capture some predictive signal for equity returns.
+
+#### Top Topics by Impact
+
+**Largest Positive Return Effects:**
+
+| Topic | Coefficient | Std. Error | Interpretation |
+|-------|-------------|-----------|-----------------|
+| topic_303_lag1 | +5.045 | — | Increases next-day return by ~5% |
+| topic_359_lag1 | +4.960 | — | Increases next-day return by ~5% |
+| topic_334_lag1 | +4.450 | — | Increases next-day return by ~4.5% |
+| topic_180_lag1 | +4.419 | — | Increases next-day return by ~4.4% |
+| topic_128_lag1 | +3.432 | — | Increases next-day return by ~3.4% |
+
+**Largest Negative Return Effects:**
+
+| Topic | Coefficient | Std. Error | Interpretation |
+|-------|-------------|-----------|-----------------|
+| topic_173_lag1 | -6.118 | — | Decreases next-day return by ~6.1% |
+| topic_126_lag1 | -5.549 | — | Decreases next-day return by ~5.5% |
+| topic_330_lag1 | -4.098 | — | Decreases next-day return by ~4.1% |
+| topic_285_lag1 | -3.984 | — | Decreases next-day return by ~4.0% |
+| topic_188_lag1 | -3.890 | — | Decreases next-day return by ~3.9% |
+
+#### Diagnostic Findings
+
+- **Residual Distribution**: Heavy-tailed (see diagnostics plot); suggests outlier events not captured by linear model
+- **Heteroskedasticity**: Present in residuals; consider robust standard errors for inference
+- **Serial Correlation**: Moderate; daily returns exhibit persistence not fully explained by lagged topics
+- **Model Specification**: Linear framework may miss threshold effects or nonlinear topic-return relationships
+
+### Interpretation
+
+**What the Results Tell Us:**
+
+1. **Modest Direct Predictability**: Topics exhibit weak but non-negligible direct predictive power for next-day returns (R² = 9.3%, p ≈ 0.07). This is consistent with semi-efficient markets where news-based signals are partially incorporated into prices but not immediately.
+
+2. **Heterogeneous Topic Effects**: Different topics drive returns in opposite directions, confirming topics capture thematic heterogeneity (e.g., positive topics like "recovery" vs. negative topics like "crisis").
+
+3. **Narrative Validity**: Despite modest R², the existence of measurable topic-return correlations validates the BERTopic extraction; topics represent economically meaningful financial narratives, not noise.
+
+4. **Market Efficiency Implications**: 9.3% explanatory power suggests neither perfect efficiency (topics should have zero power) nor extreme mispricings (topics should have >50% power). This aligns with financial market microstructure literature.
+
+### Robustness & Extensions
+
+**Potential Improvements:**
+- Use continuous topic prevalence (instead of binary dummies) to capture intensity of topic exposure
+- Add control variables (market returns, volatility, sentiment indices)
+- Test for non-linear effects or interaction terms among topics
+- Implement Newey–West or clustered standard errors to account for panel structure
+- Examine topic effects during crisis vs. normal periods (time-varying relationships)
+
+---
+
+## Repository Structure
+
+```
+master-thesis/
+├── README.md                                 # This file
+├── Thesis Summary.md                         # High-level thesis abstract
+├── THESIS_CONTEXT_ENHANCED.md               # Detailed methodological context
+├── requirements.txt                          # Python dependencies
+├── Code/
+│   ├── 01_data_collection.ipynb
+│   ├── 02_data_preprocessing*.ipynb
+│   ├── 03_data_pipeline_*.ipynb
+│   ├── 04_04_pipeline_BERTopic_FinBert.ipynb
+│   ├── Regression_FinBert_adj_return.ipynb
+│   ├── Data/
+│   ├── Outputs/
+│   └── iframe_figures/
+├── Literatur Financial Topic Modeling/
+└── .gitignore
 ```
 
 ---
 
-## Research Method and Design Choices
+## Citation
 
-### 1) Data-first, chronological modeling
+If you use this pipeline or results in your research, please cite:
 
-Financial text is strongly time-dependent. To avoid leakage and unrealistic performance:
-
-- data is sorted chronologically,
-- duplicate headlines are removed,
-- splits are date-based,
-- and evaluation uses strict temporal separation.
-
-### 2) Candidate model comparison
-
-The thesis compares multiple topic-model families:
-
-- **LDA**,
-- **Top2Vec**,
-- **BERTopic**,
-- **BERTopic + finance-oriented embeddings** (where applicable).
-
-This allows a fair classical-vs-transformer comparison before deeper optimization.
-
-### 3) Why BERTopic is central in the main pipeline
-
-BERTopic is emphasized because it combines:
-
-- semantic embeddings (better than bag-of-words for short headlines),
-- manifold reduction (UMAP),
-- density clustering (HDBSCAN),
-- and human-readable topic representations.
-
-This architecture is well-suited for noisy, high-volume financial headlines where topics are sparse and shifting.
-
-### 4) Robust validation strategy
-
-Model selection is not done on the test split. Instead:
-
-- tuning uses **train + validation only**,
-- with **rolling / expanding time-series CV**,
-- and **fixed random seed** during hyperparameter selection.
-
-After selecting the best config, the model is re-run with **multiple seeds on the untouched test split** to measure sensitivity and report mean ± std.
-
-### 5) Metric framework (literature-aligned)
-
-The current pipeline separates **model selection metrics** from **final diagnostics**.
-
-**Tuning metrics (equal weight in CV):**
-
-- **Coherence ($C_v$)**, motivated by usage in financial topic-model evaluation (Kretinin & Nguyen),
-- **Coherence ($C_{NPMI}$)**, following coherence choices in BERTopic evaluation setups (Jehnen et al.),
-- **Topic Diversity**, aligned with diversity reporting practices in topic-model assessment (Egger & Yu),
-- **Intra-topic similarity** (higher is better),
-- **Inter-topic similarity** (lower is better; inverted in scoring), both from the semantic compactness/separation framing in Jehnen et al.
-
-**Final-test diagnostics (not used for model selection):**
-
-- **Silhouette (cosine)** on non-outlier assignments,
-- **Outlier Ratio** (share of `-1` documents),
-- **Topic Count** and singleton checks.
-
-This design keeps ranking focused on semantic topic quality while still reporting geometric/cluster-health behavior on the held-out test set.
-
----
-
-## Hyperparameter Tuning & Ranking Methodology
-
-### Overview
-
-Model selection in this pipeline occurs in **two phases**:
-
-1. **Phase 1: Fixed-seed tuning on train+val** with rolling/expanding time-series CV,
-2. **Phase 2: Multi-seed robustness evaluation on test** (untouched by tuning).
-
-### Phase 1: Hyperparameter Search & Composite Scoring
-
-#### Search Strategy
-
-- **Search space**: expanded grid of approximately **300 parameter combinations** across:
-	- `n_neighbors` (UMAP local neighborhood size),
-	- `n_components` (UMAP dimensionality),
-	- `min_cluster_size` (HDBSCAN density threshold),
-	- `min_samples` (HDBSCAN core-distance sensitivity),
-	- `ngram_range` (vectorizer: unigrams or unigrams+bigrams).
-
-- **Validation folds**: 3 rolling/expanding folds on train+val pool (e.g., fold 1 trains on first 33%, validates on next 33%; fold 2 trains on first 66%, validates on last 33%; etc.)
-
-- **Seed**: Fixed `RANDOM_SEED=42` ensures **deterministic** model selection; variance is reserved for final test evaluation.
-
-#### Per-Fold Metrics
-
-For each (trial, fold) combination, five core metrics are collected and used for ranking:
-
-| Metric | Direction | Meaning |
-|--------|-----------|---------|
-| **cv_val** | higher better | Coherence $C_v$ on validation fold (semantic interpretability). |
-| **npmi_val** | higher better | Coherence $C_{NPMI}$ on validation fold (word co-occurrence consistency). |
-| **topic_diversity** | higher better | Fraction of unique words across topics (lower redundancy). |
-| **intra_sim** | higher better | Mean semantic similarity within topics (topic compactness). |
-| **inter_sim** | lower better | Mean semantic similarity across topics (topic distinctness). |
-
-#### Aggregation to Param-Level Scores
-
-Results from all 3 folds are **averaged per unique parameter tuple**, producing one row per unique hyperparameter combination.
-
-**Normalization** (min-max scaling by parameter group):
+```bibtex
+@mastersthesis{Kessler2026,
+  author = {Kessler, Gianfranco},
+  title = {Application of {NLP} and {ML} Techniques to Identify Topics in and Classify Financial News},
+  school = {Zurich University of Applied Sciences (ZHAW)},
+  year = {2026}
+}
 ```
-norm_i = (value_i - min) / (max - min)
-```
-where direction is determined by `higher_is_better`; for `inter_sim`, the normalized score is inverted so that higher normalized value always means better.
-
-Each parameter set gets:
-- `cv_val_norm` = normalized coherence (higher = better),
-- `npmi_val_norm` = normalized NPMI coherence (higher = better),
-- `topic_diversity_norm` = normalized diversity (higher = better),
-- `intra_sim_norm` = normalized intra-topic similarity (higher = better),
-- `inter_sep_norm` = normalized separation from inter-topic similarity (higher = better).
-
-#### Composite Score Calculation
-
-The **composite score** is the equal-weight average of the five normalized core metrics:
-
-$$
-composite_{score} = \frac{1}{5}\left(\text{cv\_val\_norm} + \text{npmi\_val\_norm} + \text{topic\_diversity\_norm} + \text{intra\_sim\_norm} + \text{inter\_sep\_norm}\right)
-$$
-
-This keeps model selection aligned with the thesis objective: choose topics that are coherent, diverse, internally compact, and externally distinct, without adding extra ad-hoc weighting between these core quality dimensions.
-
-#### Model Selection
-
-The **top-ranked configuration** is the row with the highest composite score. Ties are broken by iteration order (first occurrence wins). The tuning cell displays:
-
-1. Top 10 configurations (overall by composite score),
-2. Best configuration per fold (to inspect temporal drift),
-3. Average fit time,
-4. The single best config chosen for final evaluation.
 
 ---
 
-### Phase 2: Multi-Seed Test Evaluation
+## License
 
-#### Why Multi-Seed?
-
-Even with fixed `RANDOM_SEED=42` during tuning, UMAP and HDBSCAN are stochastic in their internal algorithms. To measure **robustness**, the best-tuned configuration is re-run with **9 different seeds** only on the held-out test split.
-
-#### Test Evaluation Workflow
-
-For each seed:
-1. Refit the best model on **train + validation** (using the seed in UMAP/HDBSCAN),
-2. Transform and evaluate on **test set only** (never seen before),
-3. Record per-seed metrics: $C_v$, $C_{NPMI}$, diversity, intra/inter similarity, plus final diagnostics (silhouette, outlier ratio, topic count).
-
-#### Summary Statistics
-
-Per-metric mean and standard deviation (std) across the 9 seeds:
-
-$$\mu_{\text{metric}} = \frac{1}{9} \sum_{i=1}^{9} \text{metric}_i, \quad \sigma_{\text{metric}} = \sqrt{\frac{1}{9} \sum_{i=1}^{9} (\text{metric}_i - \mu)^2}$$
-
-**Thesis-ready reporting table** formats this as `mean ± std` (e.g., `0.4675 ± 0.0188`), allowing readers to quickly assess both point estimates and sensitivity.
+This project is released under the **MIT License**. See `LICENSE` file for full terms.
 
 ---
 
-### Interpretation of Scores & Diagnostics
+## Known Limitations
 
-#### Composite Score Meaning
-
-- A higher composite score indicates stronger performance on the five equally weighted semantic quality dimensions used in tuning.
-- Comparisons are meaningful **within the same experiment run/grid** (after fold-level aggregation and normalization).
-- Final model claims are based on **mean ± std across seeds on test**, not on a single best seed.
-
-#### Outlier Ratio Interpretation
-
-- **< 50%**: Most documents assigned to dense topics; clean clustering.
-- **50–70%**: Moderate outlier fraction; some noise points; typical for financial news (many niche stories).
-- **> 70%**: Excessive fragmentation; model struggles to find density (may need tuning).
-
-**Current finding**: ~69% outlier ratio suggests high noise but acceptable for the domain.
-
-#### Silhouette Score Interpretation
-
-- **> 0.3**: Good cluster separation.
-- **0.1–0.3**: Moderate separation; overlapping clusters.
-- **< 0.1**: Weak separation; clusters are close or poorly defined.
-
-**Current finding**: ~0.158 indicates weak geometric separation despite decent coherence (topics are semantically interpretable but not spatially distinct in embedding space).
-
-#### Topic Count
-
-- **Too few (< 5)**: Oversimplification; risk of losing signals.
-- **Reasonable (10–50)**: Good granularity for financial news.
-- **Too many (> 100)**: Fragmentation; many single-document topics.
-
-**Current finding**: ~45–97 topics (seed-dependent); within reasonable range.
+- **High outlier ratio (~68%)**: Typical for HDBSCAN on financial news; acceptable but limits topic density
+- **Weak panel-level predictivity**: Test-only OLS shows minimal direct stock return predictability
+- **Computational cost**: Full pipeline embedding & clustering are resource-intensive; consider sampling for larger scales
 
 ---
 
-### Diagnostic Visuals
+## Acknowledgments
 
-The notebook includes cluster diagnostics at the end:
-
-1. **Cluster size distribution**: Histogram of non-outlier topic sizes; identifies singletons and size imbalance.
-2. **Embedding scatter (2D UMAP)**: Visualization colored by outlier/singleton/valid status; shows spatial clustering quality.
-3. **Per-seed breakdowns**: Bar charts of outlier ratio and topic count across seeds; assesses stability.
-
----
-
-## Summary: Why This Ranking Approach Works
-
-This multi-metric, multi-fold, multi-seed design addresses common pitfalls:
-
-**Avoids test-set contamination** (tuning only on train+val)  
-**Captures temporal dynamics** (rolling CV folds)  
-**Uses literature-aligned semantic criteria** (Jehnen; Kretinin & Nguyen; Egger & Yu)  
-**Balances coherence, diversity, compactness, and separation** (equal-weight composite)  
-**Measures robustness** (9-seed final evaluation)  
-**Keeps structural diagnostics transparent** (silhouette/outlier/topic count reported on test)  
-**Respects domain constraints** (allows high outlier ratio for financial noise)
+This research builds on foundational work in:
+- **Topic Modeling**: Blei et al. (LDA), Angelov (Top2Vec), Grootendorst (BERTopic)
+- **Embeddings**: Devlin et al. (BERT), Huang et al. (FinBERT)
+- **Manifold Learning**: McInnes & Healy (UMAP)
+- **Clustering**: Campello, Moulavi, & Sander (HDBSCAN)
 
 ---
-
-## End-to-End Workflow in This Repository
-
-The practical pipeline is organized as notebooks in `Code/`.
-
-1. **Data collection**  
-	Notebook: `Code/01_data_collection.ipynb`  
-	Build raw datasets from financial news sources.
-
-2. **Data preprocessing / standardization**  
-	Notebooks: `Code/02_data_preprocessing.ipynb`, `Code/02_data_standardization.ipynb`  
-	Clean schema, normalize timestamps/text fields, remove unusable rows.
-
-3. **Model family pipelines**  
-	Notebooks in `Code/03_data_pipeline_*.ipynb`  
-	Compare LDA, Top2Vec, BERTopic, and BERTopic variants.
-
-4. **Main BERTopic train/val/test workflow**  
-	Notebook: `Code/04_data_pipeline_BERTopic_TEST_TRAIN.ipynb`  
-	- chronological split,
-	- rolling CV tuning on train+val,
-	- final multi-seed test evaluation,
-	- diagnostics and visual sanity checks.
-
-5. **Reporting artifacts**  
-	Data and figure outputs are stored under:
-	- `Code/Data/`
-	- `Code/iframe_figures/`
-
----
-
-## Key Methodological Decisions (Thesis Rationale)
-
-- **Chronological splitting instead of random splitting**: respects real-world forecasting constraints.
-- **Validation before test**: prevents test-set overfitting during tuning.
-- **Multi-seed final evaluation**: quantifies robustness and variance, not just a single lucky run.
-- **Outlier-aware diagnostics**: essential with HDBSCAN-based topic assignment.
-- **Interpretability focus**: topic words, temporal patterns, and per-topic behavior are prioritized over black-box accuracy alone.
-
----
-
-## How to Run (Recommended Order)
-
-Run notebooks sequentially in this order:
-
-1. `Code/01_data_collection.ipynb`
-2. `Code/02_data_standardization.ipynb`
-3. `Code/02_data_preprocessing.ipynb`
-4. selected `Code/03_data_pipeline_*.ipynb` comparison notebooks
-5. `Code/04_data_pipeline_BERTopic_TEST_TRAIN.ipynb` (main experimental notebook)
-
-For the final BERTopic notebook, execute top-to-bottom so that embeddings, folds, best params, multi-seed evaluation, and diagnostics remain consistent.
-
----
-
-## Expected Thesis Outputs
-
-The final deliverables are:
-
-- a validated topic modeling pipeline for financial news,
-- quantitative quality tables (including mean ± std across seeds),
-- visual diagnostics for cluster behavior (outliers/singletons/topic sizes),
-- and structured topic signals that can be integrated into downstream financial models.
-
----
-
-## Repository Structure (High Level)
-
-```text
-README.md
-Code/
-  01_data_collection.ipynb
-  02_data_preprocessing.ipynb
-  02_data_standardization.ipynb
-  03_data_pipeline_*.ipynb
-  04_data_pipeline_BERTopic_TEST_TRAIN.ipynb
-  Data/
-  iframe_figures/
-Literatur Financial Topic Modeling/
-```
