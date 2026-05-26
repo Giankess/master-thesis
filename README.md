@@ -331,8 +331,6 @@ $$r_{i,t+1} = \alpha_i + \sum_{X} \beta_X \cdot \mathbb{1}(\text{topic\_X\_preva
 ```
 master-thesis/
 ├── README.md                                 # This file
-├── Thesis Summary.md                         # High-level thesis abstract
-├── THESIS_CONTEXT_ENHANCED.md               # Detailed methodological context
 ├── requirements.txt                          # Python dependencies
 ├── Code/
 │   ├── 01_data_collection.ipynb

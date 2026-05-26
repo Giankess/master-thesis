@@ -1,0 +1,55 @@
+# Financial Topic Modeling Pipeline - Requirements
+# Master's Thesis: Application of NLP & ML Techniques to Identify Topics in and Classify Financial News
+# Python 3.13.12
+# 
+# Core Data & Scientific Computing
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Topic Modeling & NLP
+bertopic>=0.15.0
+sentence-transformers>=2.2.0
+umap-learn>=0.5.3
+hdbscan>=0.8.28
+gensim>=4.3.0
+nltk>=3.8.1
+langdetect>=1.0.9
+
+# Dimensionality Reduction & Clustering
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.13.0
+
+# Statistical Analysis & Regression
+statsmodels>=0.13.5
+
+# Data Collection & API Integration
+requests>=2.31.0
+feedparser>=6.0.10
+beautifulsoup4>=4.12.0
+python-dotenv>=1.0.0
+
+# Additional NLP & Text Processing
+langchain>=0.1.0
+langchain-google-genai>=0.0.1
+
+# Data I/O
+openpyxl>=3.1.0
+
+# Utilities
+tqdm>=4.65.0
+pathlib2>=2.3.7.post1 ; python_version < '3.5'
+
+# Jupyter & Development
+jupyter>=1.0.0
+ipython>=8.10.0
+ipykernel>=6.20.0
+
+# Optional: For distributed processing (if needed)
+# ray[all]>=2.10.0
+# dask[dataframe]>=2023.12.0
